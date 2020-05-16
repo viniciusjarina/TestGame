@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 
 namespace TestGame
 {
@@ -16,6 +17,9 @@ namespace TestGame
         private Effect blurEffect;
         private Texture2D texture;
         private SpriteFont font;
+
+        BlendState multiply;
+        BlendState originalBlendState;
 
         public Game1()
         {
@@ -50,10 +54,59 @@ namespace TestGame
             effect = Content.Load<Effect>("File");
             blurEffect = Content.Load<Effect>("Blur");
             texture = Content.Load<Texture2D>("troll");
+
+            var x = Type.GetType("Microsoft.Xna.Framework.Content.ListReader`1[[Microsoft.Xna.Framework.Rectangle, MonoGame.Framework]]");
+            var listreaders = AppDomain.CurrentDomain.GetAssemblies()[2].GetTypes().Where(t => t.Name.Contains("ListReader")).ToArray();
             font = Content.Load<SpriteFont>("FantasDefaultFont");
+
+            
 
             blur = new GaussianBlur(blurEffect);
             blur.BlurAmount = 1;
+
+            multiply = new BlendState();
+
+            // Add
+            //multiply.ColorSourceBlend = Blend.SourceAlpha;
+            //multiply.ColorDestinationBlend = Blend.DestinationAlpha;
+            //multiply.ColorBlendFunction = BlendFunction.Add;
+
+            // Multiply
+            //multiply.ColorSourceBlend = Blend.DestinationColor;
+            //multiply.ColorDestinationBlend = Blend.Zero;
+            //multiply.ColorBlendFunction = BlendFunction.Add;
+
+            // MultiplyAlpha
+            //multiply.ColorSourceBlend = Blend.DestinationColor;
+            //multiply.AlphaSourceBlend = Blend.SourceAlpha;
+            //
+            //multiply.ColorDestinationBlend = Blend.InverseSourceAlpha;
+            //multiply.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+            //
+            //multiply.ColorBlendFunction = BlendFunction.Add;
+            //multiply.AlphaBlendFunction = BlendFunction.Add;
+
+            // Screen
+            //multiply.ColorSourceBlend = Blend.InverseDestinationColor;
+            //multiply.AlphaSourceBlend = Blend.SourceAlpha;
+
+            //multiply.ColorDestinationBlend = Blend.One;
+            //multiply.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+
+            //multiply.ColorBlendFunction = BlendFunction.Add;
+            //multiply.AlphaBlendFunction = BlendFunction.Add;
+
+            // Subtract
+            //multiply.ColorSourceBlend = Blend.DestinationColor;
+            //multiply.AlphaSourceBlend = Blend.SourceAlpha;
+
+            //multiply.ColorDestinationBlend = Blend.One;
+            //multiply.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+
+            //multiply.ColorBlendFunction = BlendFunction.ReverseSubtract;
+            //multiply.AlphaBlendFunction = BlendFunction.Add;
+
+            multiply = originalBlendState;
 
             basicEffect = new BasicEffect(GraphicsDevice);
             var view       = Matrix.CreateLookAt(Vector3.Zero, Vector3.Forward, Vector3.Up);
@@ -128,7 +181,7 @@ namespace TestGame
         {
             GraphicsDevice.SetRenderTarget(target1);
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(new Color(50,50,192));
 
 
             SpriteSortMode sortMode = SpriteSortMode.Deferred;
@@ -152,13 +205,20 @@ namespace TestGame
             ///                 Vector2 scale,
             ///                 SpriteEffects effects,
             ///                 float layerDepth);
-            spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, xeffect, transform);
+            spriteBatch.Begin(sortMode, multiply, samplerState, depthStencilState, rasterizerState, xeffect, transform);
+
+
             spriteBatch.Draw(texture,
                              new Vector2(0, 0),
                              null, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.FlipVertically, 0f);
 
+            //GraphicsDevice.BlendState = blendState;
+
             
             spriteBatch.End();
+
+            GraphicsDevice.BlendState = blendState;
+
 
            // effect.
             //basicEffect.CurrentTechnique = effect.CurrentTechnique;
@@ -197,15 +257,17 @@ namespace TestGame
            // xeffect = effect;
             //GraphicsDevice.SetRenderTarget(target1);
             //xeffect = blurEffect;
-            //rotation += 0.01f;
-            spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, xeffect, transform);
-            spriteBatch.DrawString(font, "LALALALALAL", new Vector2(200, 700), Color.Yellow, MathHelper.PiOver4, new Vector2(200, 700), 1.0f, SpriteEffects.None, 0.0f);
+            rotation += 0.01f;
+            spriteBatch.Begin(sortMode, multiply, samplerState, depthStencilState, rasterizerState, xeffect, transform);
+            
+            //spriteBatch.DrawString(font, "LALALALALAL", new Vector2(200, 700), Color.Yellow, MathHelper.PiOver4, new Vector2(200, 700), 1.0f, SpriteEffects.None, 0.0f);
+
             spriteBatch.Draw(texture,
                              new Vector2(100, 100),
-                             null, new Color(Color.Green, 0.5f), 0f, Vector2.Zero, Vector2.One, SpriteEffects.FlipVertically, 0f);
+                             null, Color.Green, rotation, new Vector2(texture.Bounds.Width/2,texture.Bounds.Height/2) , Vector2.One, SpriteEffects.FlipVertically, 0f);
             spriteBatch.Draw(texture,
-                             new Vector2(200, 200),
-                             null, new Color(Color.Blue, 0.5f), 0f, Vector2.Zero, Vector2.One, SpriteEffects.FlipVertically, 0f);
+                             new Vector2(150, 150),
+                             null, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.FlipVertically, 0f);
             spriteBatch.End();
 
 

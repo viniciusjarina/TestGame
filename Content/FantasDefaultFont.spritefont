@@ -65,7 +65,7 @@ with.
       <!-- Hangul Jamo -->
 
       <!-- Chinese - Kanjis -->
-      <CharacterRegion><Start>，</Start><End>，</End></CharacterRegion>
+      <!-- <CharacterRegion><Start>，</Start><End>，</End></CharacterRegion>
       <CharacterRegion><Start>！</Start><End>！</End></CharacterRegion>
       <CharacterRegion><Start>？</Start><End>？</End></CharacterRegion>
       <CharacterRegion><Start>；</Start><End>；</End></CharacterRegion>
@@ -2724,7 +2724,7 @@ with.
       <CharacterRegion><Start>栽</Start><End>栽</End></CharacterRegion>
       <CharacterRegion><Start>拐</Start><End>拐</End></CharacterRegion>
       <CharacterRegion><Start>笠</Start><End>笠</End></CharacterRegion>
-      <CharacterRegion><Start>駄</Start><End>駄</End></CharacterRegion>
+      <CharacterRegion><Start>駄</Start><End>駄</End></CharacterRegion> -->
       </CharacterRegions>
   </Asset>
 </XnaContent>
